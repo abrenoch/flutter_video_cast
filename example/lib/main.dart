@@ -174,7 +174,10 @@ class _CastSampleState extends State<CastSample> {
   Future<void> _onSessionStarted() async {
     setState(() => _state = AppState.connected);
     await _controller.loadMedia(
-      'http://demo.unified-streaming.com/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+      title: 'Big Buck Bunny',
+      mimeType: 'video/mp4',
+      thumb: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Big_buck_bunny_poster_big.jpg/339px-Big_buck_bunny_poster_big.jpg',
     );
   }
 
