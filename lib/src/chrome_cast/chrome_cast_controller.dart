@@ -25,9 +25,9 @@ class ChromeCastController {
     return _chromeCastPlatform.removeSessionListener(id: id);
   }
 
-  /// Load a new media by providing an [url].
-  Future<void> loadMedia(String url) {
-    return _chromeCastPlatform.loadMedia(url, id: id);
+  /// Load a new media by providing an [url] and optionally mimeType, title, or thumb.
+  Future<void> loadMedia(String url, {String? mimeType, String? title, String? thumb}) {
+    return _chromeCastPlatform.loadMedia(url, id: id, mimeType: mimeType, title: title, thumb: thumb);
   }
 
   /// Plays the video playback.
