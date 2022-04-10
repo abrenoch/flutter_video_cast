@@ -5,6 +5,7 @@ import android.view.ContextThemeWrapper
 import androidx.mediarouter.app.MediaRouteButton
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaLoadOptions
+import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.Session
@@ -15,6 +16,8 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.platform.PlatformView
+import com.google.android.gms.common.images.WebImage
+import android.net.Uri
 
 class ChromeCastController(
         messenger: BinaryMessenger,
@@ -33,9 +36,26 @@ class ChromeCastController(
     private fun loadMedia(args: Any?) {
         if (args is Map<*, *>) {
             val url = args["url"] as? String
-            val media = MediaInfo.Builder(url).build()
+            var mimeType = args["mimeType"] as? String
+            var title = args["title"] as? String
+            var thumb = args["thumb"] as? String
+            val media = MediaInfo.Builder(url)
+            if (!mimeType.isNullOrEmpty()) {
+                media.setContentType(mimeType)
+            }
+            if (!title.isNullOrEmpty()) {
+                var mediaType = MediaMetadata.MEDIA_TYPE_GENERIC
+                if (mimeType!!.startsWith("image")) {
+                    mediaType = MediaMetadata.MEDIA_TYPE_PHOTO
+                    if (thumb.isNullOrEmpty()) thumb = url
+                }
+                media.setMetadata(MediaMetadata(mediaType).apply {
+                    putString(MediaMetadata.KEY_TITLE, title)
+                    if (!thumb.isNullOrEmpty()) addImage(WebImage(Uri.parse(thumb)))
+                })
+            }
             val options = MediaLoadOptions.Builder().build()
-            val request = sessionManager?.currentCastSession?.remoteMediaClient?.load(media, options)
+            val request = sessionManager?.currentCastSession?.remoteMediaClient?.load(media.build(), options)
             request?.addStatusListener(this)
         }
     }
